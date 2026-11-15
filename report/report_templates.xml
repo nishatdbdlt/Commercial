@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report actions -->
+    <record id="action_report_commercial_invoice" model="ir.actions.report">
+        <field name="name">Commercial Invoice</field>
+        <field name="model">commercial.invoice</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">garments_commercial.report_commercial_invoice</field>
+        <field name="report_file">garments_commercial.report_commercial_invoice</field>
+        <field name="print_report_name">'Commercial Invoice - %s' % (object.invoice_number or '')</field>
+        <field name="binding_model_id" ref="model_commercial_invoice"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_packing_list" model="ir.actions.report">
+        <field name="name">Packing List</field>
+        <field name="model">commercial.invoice</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">garments_commercial.report_packing_list</field>
+        <field name="report_file">garments_commercial.report_packing_list</field>
+        <field name="print_report_name">'Packing List - %s' % (object.invoice_number or '')</field>
+        <field name="binding_model_id" ref="model_commercial_invoice"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_lc_summary" model="ir.actions.report">
+        <field name="name">LC Summary</field>
+        <field name="model">commercial.export.lc</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">garments_commercial.report_lc_summary</field>
+        <field name="report_file">garments_commercial.report_lc_summary</field>
+        <field name="print_report_name">'LC Summary - %s' % (object.lc_number or '')</field>
+        <field name="binding_model_id" ref="model_commercial_export_lc"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Commercial Invoice -->
+    <template id="report_commercial_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class="text-center">COMMERCIAL INVOICE</h2>
+                        <div class="row mt-3 mb-3">
+                            <div class="col-6">
+                                <strong>Buyer / Consignee:</strong><br/>
+                                <span t-field="o.buyer_id"
+                                      t-options='{"widget": "contact", "fields": ["name", "address", "phone"], "no_marker": True}'/>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm table-borderless">
+                                    <tr><td><strong>Invoice No:</strong></td><td><span t-field="o.invoice_number"/></td></tr>
+                                    <tr><td><strong>Invoice Date:</strong></td><td><span t-field="o.invoice_date"/></td></tr>
+                                    <tr><td><strong>LC / Contract No:</strong></td><td><span t-field="o.export_lc_id.lc_number"/></td></tr>
+                                    <tr><td><strong>LC Date:</strong></td><td><span t-field="o.export_lc_id.issue_date"/></td></tr>
+                                    <tr><td><strong>EXP No / Date:</strong></td><td><span t-field="o.exp_number"/> <span t-field="o.exp_date"/></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <strong>Issuing Bank:</strong> <span t-field="o.export_lc_id.issuing_bank_id"/><br/>
+                                <strong>Payment Terms:</strong> <span t-field="o.export_lc_id.payment_terms"/><br/>
+                                <strong>Incoterm:</strong> <span t-field="o.incoterm"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Port of Loading:</strong> <span t-field="o.port_loading"/><br/>
+                                <strong>Port of Discharge:</strong> <span t-field="o.port_discharge"/><br/>
+                                <strong>B/L No / Date:</strong> <span t-field="o.bl_number"/> <span t-field="o.bl_date"/><br/>
+                                <strong>Vessel:</strong> <span t-field="o.vessel"/>
+                            </div>
+                        </div>
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>Style / Item</th>
+                                    <th>Description</th>
+                                    <th>HS Code</th>
+                                    <th class="text-end">Quantity</th>
+                                    <th class="text-end">Unit Price</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids" t-as="line">
+                                    <tr>
+                                        <td><span t-field="line.style_no"/></td>
+                                        <td><span t-field="line.description"/></td>
+                                        <td><span t-field="line.hs_code"/></td>
+                                        <td class="text-end"><span t-field="line.quantity"/> <span t-field="line.uom_id"/></td>
+                                        <td class="text-end"><span t-field="line.price_unit"/></td>
+                                        <td class="text-end"><span t-field="line.subtotal"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3"><strong>Total</strong></td>
+                                    <td class="text-end"><strong><span t-field="o.total_qty"/></strong></td>
+                                    <td></td>
+                                    <td class="text-end"><strong><span t-field="o.amount_total"/></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <p>
+                            <strong>Amount in words:</strong>
+                            <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/>
+                        </p>
+                        <p t-if="o.marks"><strong>Shipping Marks:</strong><br/><span t-field="o.marks"/></p>
+                        <div class="row mt-5">
+                            <div class="col-6"></div>
+                            <div class="col-6 text-center">
+                                <br/><br/>
+                                ______________________<br/>
+                                Authorized Signature
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Packing List -->
+    <template id="report_packing_list">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class="text-center">PACKING LIST</h2>
+                        <div class="row mt-3 mb-3">
+                            <div class="col-6">
+                                <strong>Buyer / Consignee:</strong><br/>
+                                <span t-field="o.buyer_id"
+                                      t-options='{"widget": "contact", "fields": ["name", "address", "phone"], "no_marker": True}'/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Invoice No:</strong> <span t-field="o.invoice_number"/><br/>
+                                <strong>Date:</strong> <span t-field="o.invoice_date"/><br/>
+                                <strong>LC / Contract No:</strong> <span t-field="o.export_lc_id.lc_number"/><br/>
+                                <strong>B/L No:</strong> <span t-field="o.bl_number"/><br/>
+                                <strong>Container No:</strong> <span t-field="o.container_no"/>
+                            </div>
+                        </div>
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>Style / Item</th>
+                                    <th>Description</th>
+                                    <th class="text-end">Quantity</th>
+                                    <th class="text-end">Cartons</th>
+                                    <th class="text-end">Net Wt (kg)</th>
+                                    <th class="text-end">Gross Wt (kg)</th>
+                                    <th class="text-end">CBM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids" t-as="line">
+                                    <tr>
+                                        <td><span t-field="line.style_no"/></td>
+                                        <td><span t-field="line.description"/></td>
+                                        <td class="text-end"><span t-field="line.quantity"/> <span t-field="line.uom_id"/></td>
+                                        <td class="text-end"><span t-field="line.cartons"/></td>
+                                        <td class="text-end"><span t-field="line.net_weight"/></td>
+                                        <td class="text-end"><span t-field="line.gross_weight"/></td>
+                                        <td class="text-end"><span t-field="line.cbm"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2"><strong>Total</strong></td>
+                                    <td class="text-end"><strong><span t-field="o.total_qty"/></strong></td>
+                                    <td class="text-end"><strong><span t-field="o.total_cartons"/></strong></td>
+                                    <td class="text-end"><strong><span t-field="o.total_net_weight"/></strong></td>
+                                    <td class="text-end"><strong><span t-field="o.total_gross_weight"/></strong></td>
+                                    <td class="text-end"><strong><span t-field="o.total_cbm"/></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <p t-if="o.marks"><strong>Shipping Marks:</strong><br/><span t-field="o.marks"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- LC Summary -->
+    <template id="report_lc_summary">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>LC Summary: <span t-field="o.lc_number"/></h2>
+                        <div class="row mt-3 mb-3">
+                            <div class="col-6">
+                                <strong>Buyer:</strong> <span t-field="o.buyer_id"/><br/>
+                                <strong>Issuing Bank:</strong> <span t-field="o.issuing_bank_id"/><br/>
+                                <strong>Payment Terms:</strong> <span t-field="o.payment_terms"/><br/>
+                                <strong>Status:</strong> <span t-field="o.state"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Issue Date:</strong> <span t-field="o.issue_date"/><br/>
+                                <strong>Last Shipment:</strong> <span t-field="o.last_shipment_date"/><br/>
+                                <strong>Expiry:</strong> <span t-field="o.expiry_date"/><br/>
+                                <strong>Tolerance:</strong> <span t-field="o.tolerance_percent"/>%
+                            </div>
+                        </div>
+
+                        <h4>Utilization</h4>
+                        <table class="table table-sm">
+                            <tr><td>Original LC Value</td><td class="text-end"><span t-field="o.lc_value"/></td></tr>
+                            <tr><td>Current LC Value (after amendments)</td><td class="text-end"><span t-field="o.amended_value"/></td></tr>
+                            <tr><td>BBLC Total (<span t-esc="'%.1f' % o.btb_percent"/>%)</td><td class="text-end"><span t-field="o.btb_total"/></td></tr>
+                            <tr><td>Invoiced / Shipped</td><td class="text-end"><span t-field="o.shipped_value"/></td></tr>
+                            <tr><td>Balance</td><td class="text-end"><span t-field="o.balance_value"/></td></tr>
+                            <tr><td>Realized</td><td class="text-end"><span t-field="o.realized_value"/></td></tr>
+                        </table>
+
+                        <h4 t-if="o.amendment_ids">Amendments</h4>
+                        <table class="table table-sm" t-if="o.amendment_ids">
+                            <thead><tr><th>No</th><th>Date</th><th class="text-end">Value Change</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="o.amendment_ids" t-as="a">
+                                    <td><span t-field="a.amendment_no"/></td>
+                                    <td><span t-field="a.date"/></td>
+                                    <td class="text-end"><span t-field="a.value_change"/></td>
+                                    <td><span t-field="a.description"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4 t-if="o.btb_lc_ids">Back-to-Back LCs</h4>
+                        <table class="table table-sm" t-if="o.btb_lc_ids">
+                            <thead><tr><th>BBLC No</th><th>Supplier</th><th class="text-end">Value</th><th>Maturity</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="o.btb_lc_ids" t-as="b">
+                                    <td><span t-field="b.btb_number"/></td>
+                                    <td><span t-field="b.supplier_id"/></td>
+                                    <td class="text-end"><span t-field="b.value"/></td>
+                                    <td><span t-field="b.maturity_date"/></td>
+                                    <td><span t-field="b.state"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4 t-if="o.invoice_ids">Commercial Invoices</h4>
+                        <table class="table table-sm" t-if="o.invoice_ids">
+                            <thead><tr><th>Invoice No</th><th>Date</th><th>B/L No</th><th class="text-end">Amount</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="o.invoice_ids" t-as="i">
+                                    <td><span t-field="i.invoice_number"/></td>
+                                    <td><span t-field="i.invoice_date"/></td>
+                                    <td><span t-field="i.bl_number"/></td>
+                                    <td class="text-end"><span t-field="i.amount_total"/></td>
+                                    <td><span t-field="i.state"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

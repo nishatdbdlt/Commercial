@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_auto_export_lc" model="ir.ui.view">
+        <field name="name">commercial.export.lc.automation</field>
+        <field name="model">commercial.export.lc</field>
+        <field name="inherit_id" ref="view_commercial_export_lc_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="before">
+                <group string="Automation &amp; Import Tracking">
+                    <field name="btb_available"/>
+                    <field name="purchase_order_count"/>
+                    <button name="action_view_commercial_purchase_orders" type="object" string="View Import POs"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_auto_pi" model="ir.ui.view">
+        <field name="name">commercial.pi.import.automation</field>
+        <field name="model">commercial.pi</field>
+        <field name="inherit_id" ref="view_commercial_pi_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_create_purchase_order" string="Create / Open Import PO" type="object"
+                        invisible="state != 'confirmed'"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Import Receiving">
+                    <group><field name="ordered_qty"/><field name="received_qty"/></group>
+                    <field name="purchase_order_ids" readonly="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_auto_btb" model="ir.ui.view">
+        <field name="name">commercial.btb.approval</field>
+        <field name="model">commercial.btb.lc</field>
+        <field name="inherit_id" ref="view_commercial_btb_lc_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_request_approval" type="object" string="Request Approval"
+                        invisible="state != 'draft' or approval_state == 'pending' or approval_state == 'approved'"/>
+                <button name="action_approve" type="object" string="Approve" class="btn-primary"
+                        groups="garments_commercial.group_commercial_manager"
+                        invisible="approval_state != 'pending' or state != 'draft'"/>
+                <button name="action_reject" type="object" string="Reject"
+                        groups="garments_commercial.group_commercial_manager"
+                        invisible="approval_state != 'pending' or state != 'draft'"/>
+            </xpath>
+            <xpath expr="//field[@name='margin_percent']" position="after">
+                <field name="approval_state" readonly="1"/>
+                <field name="approved_by" readonly="1"/>
+                <field name="approval_date" readonly="1"/>
+                <field name="bank_payment_reference"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_auto_invoice" model="ir.ui.view">
+        <field name="name">commercial.invoice.shipment.automation</field>
+        <field name="model">commercial.invoice</field>
+        <field name="inherit_id" ref="view_commercial_invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_mark_shipped" string="Mark Shipped" type="object"
+                        invisible="shipping_status == 'shipped' or state not in ('confirmed', 'submitted', 'realized')"/>
+            </xpath>
+            <xpath expr="//field[@name='export_lc_id']" position="after">
+                <field name="ud_id" domain="[('export_lc_id', '=', export_lc_id), ('state', '=', 'issued')]"/>
+                <field name="shipping_status" readonly="1"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Shipping Attachments">
+                    <field name="document_ids" widget="many2many_binary"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_auto_ud" model="ir.ui.view">
+        <field name="name">commercial.ud.quantity.automation</field>
+        <field name="model">commercial.ud</field>
+        <field name="inherit_id" ref="view_commercial_ud_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='quantity']" position="after">
+                <field name="shipped_qty" readonly="1"/>
+                <field name="remaining_qty" readonly="1"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="UD Shipments"><field name="invoice_ids" readonly="1"/></page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_auto_submission" model="ir.ui.view">
+        <field name="name">commercial.submission.documents.automation</field>
+        <field name="model">commercial.bank.submission</field>
+        <field name="inherit_id" ref="view_commercial_submission_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_request_approval" type="object" string="Request Approval"
+                        invisible="state != 'draft' or approval_state in ('pending', 'approved')"/>
+                <button name="action_approve" type="object" string="Approve" class="btn-primary"
+                        groups="garments_commercial.group_commercial_manager"
+                        invisible="state != 'draft' or approval_state != 'pending'"/>
+                <button name="action_reject" type="object" string="Reject"
+                        groups="garments_commercial.group_commercial_manager"
+                        invisible="state != 'draft' or approval_state != 'pending'"/>
+                <button name="action_prepare_checklist" type="object" string="Prepare Checklist"
+                        invisible="state != 'draft'"/>
+            </xpath>
+            <xpath expr="//field[@name='amount']" position="after">
+                <field name="received_amount_total"/>
+                <field name="outstanding_amount"/>
+                <field name="document_complete" readonly="1"/>
+                <field name="approval_state" readonly="1"/>
+                <field name="approved_by" readonly="1"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Bank Document Checklist">
+                    <field name="document_ids" readonly="state != 'draft'">
+                        <list editable="bottom">
+                            <field name="document_type"/>
+                            <field name="name"/>
+                            <field name="required"/>
+                            <field name="received"/>
+                            <field name="attachment_id"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_auto_realization" model="ir.ui.view">
+        <field name="name">commercial.realization.installments.automation</field>
+        <field name="model">commercial.realization</field>
+        <field name="inherit_id" ref="view_commercial_realization_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='submission_id']" position="after">
+                <field name="bank_receipt_reference"/>
+                <field name="payment_amount" readonly="state == 'done'"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="action_commercial_import_purchase_orders" model="ir.actions.act_window">
+        <field name="name">Import Purchase Orders</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('commercial_pi_id', '!=', False)]</field>
+    </record>
+    <menuitem id="menu_commercial_import_purchase_orders" name="Import Purchase Orders"
+              parent="menu_commercial_import" action="action_commercial_import_purchase_orders" sequence="25"/>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_commercial_root" name="Commercial" sequence="45"
+              groups="group_commercial_user"/>
+
+    <menuitem id="menu_commercial_export" name="Export LC" parent="menu_commercial_root" sequence="10"/>
+    <menuitem id="menu_commercial_export_lc" name="Export LCs" parent="menu_commercial_export"
+              action="action_commercial_export_lc" sequence="10"/>
+
+    <menuitem id="menu_commercial_import" name="Back-to-Back" parent="menu_commercial_root" sequence="20"/>
+    <menuitem id="menu_commercial_pi" name="Proforma Invoices" parent="menu_commercial_import"
+              action="action_commercial_pi" sequence="10"/>
+    <menuitem id="menu_commercial_btb_lc" name="BBLCs" parent="menu_commercial_import"
+              action="action_commercial_btb_lc" sequence="20"/>
+    <menuitem id="menu_commercial_ud" name="UDs" parent="menu_commercial_import"
+              action="action_commercial_ud" sequence="30"/>
+
+    <menuitem id="menu_commercial_shipping" name="Shipping &amp; Bank" parent="menu_commercial_root" sequence="30"/>
+    <menuitem id="menu_commercial_invoice" name="Commercial Invoices" parent="menu_commercial_shipping"
+              action="action_commercial_invoice" sequence="10"/>
+    <menuitem id="menu_commercial_submission" name="Bank Submissions" parent="menu_commercial_shipping"
+              action="action_commercial_submission" sequence="20"/>
+    <menuitem id="menu_commercial_realization" name="Realizations" parent="menu_commercial_shipping"
+              action="action_commercial_realization" sequence="30"/>
+    <menuitem id="menu_commercial_load_samples" name="Load Sample Data"
+              parent="menu_commercial_root" action="action_commercial_load_samples"
+              groups="group_commercial_manager" sequence="90"/>
+</odoo>

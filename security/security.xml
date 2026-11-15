@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_garments_commercial" model="ir.module.category">
+        <field name="name">Garments Commercial</field>
+        <field name="sequence">45</field>
+    </record>
+
+    <record id="group_commercial_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="module_category_garments_commercial"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_commercial_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="module_category_garments_commercial"/>
+        <field name="implied_ids" eval="[(4, ref('group_commercial_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <!-- Multi-company rules -->
+    <record id="rule_commercial_export_lc_company" model="ir.rule">
+        <field name="name">Export LC: multi-company</field>
+        <field name="model_id" ref="model_commercial_export_lc"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_pi_company" model="ir.rule">
+        <field name="name">PI: multi-company</field>
+        <field name="model_id" ref="model_commercial_pi"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_btb_lc_company" model="ir.rule">
+        <field name="name">BBLC: multi-company</field>
+        <field name="model_id" ref="model_commercial_btb_lc"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_ud_company" model="ir.rule">
+        <field name="name">UD: multi-company</field>
+        <field name="model_id" ref="model_commercial_ud"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_invoice_company" model="ir.rule">
+        <field name="name">Commercial Invoice: multi-company</field>
+        <field name="model_id" ref="model_commercial_invoice"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_submission_company" model="ir.rule">
+        <field name="name">Bank Submission: multi-company</field>
+        <field name="model_id" ref="model_commercial_bank_submission"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_realization_company" model="ir.rule">
+        <field name="name">Realization: multi-company</field>
+        <field name="model_id" ref="model_commercial_realization"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_lc_amendment_company" model="ir.rule">
+        <field name="name">LC Amendment: multi-company</field>
+        <field name="model_id" ref="model_commercial_lc_amendment"/>
+        <field name="domain_force">[('export_lc_id.company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_pi_line_company" model="ir.rule">
+        <field name="name">PI Line: multi-company</field>
+        <field name="model_id" ref="model_commercial_pi_line"/>
+        <field name="domain_force">[('pi_id.company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_invoice_line_company" model="ir.rule">
+        <field name="name">Invoice Line: multi-company</field>
+        <field name="model_id" ref="model_commercial_invoice_line"/>
+        <field name="domain_force">[('invoice_id.company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_realization_deduction_company" model="ir.rule">
+        <field name="name">Realization Deduction: multi-company</field>
+        <field name="model_id" ref="model_commercial_realization_deduction"/>
+        <field name="domain_force">[('realization_id.company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_commercial_bank_document_company" model="ir.rule">
+        <field name="name">Bank checklist: multi-company</field>
+        <field name="model_id" ref="model_commercial_bank_document"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

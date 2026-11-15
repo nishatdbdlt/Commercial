@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="action_commercial_load_samples" model="ir.actions.server">
+    <field name="name">Load Sample Commercial Data</field>
+    <field name="model_id" ref="model_commercial_demo_loader"/>
+    <field name="state">code</field>
+    <field name="code">action = env['commercial.demo.loader'].create({}).action_load_samples()</field>
+    <field name="groups_id" eval="[(4, ref('group_commercial_manager'))]"/>
+  </record>
+</odoo>

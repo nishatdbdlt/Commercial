@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_ud_quantity" model="ir.actions.report">
+        <field name="name">UD Quantity Balance</field>
+        <field name="model">commercial.ud</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">garments_commercial.report_ud_quantity</field>
+        <field name="report_file">garments_commercial.report_ud_quantity</field>
+        <field name="binding_model_id" ref="model_commercial_ud"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_bank_outstanding" model="ir.actions.report">
+        <field name="name">Bank Outstanding Summary</field>
+        <field name="model">commercial.bank.submission</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">garments_commercial.report_bank_outstanding</field>
+        <field name="report_file">garments_commercial.report_bank_outstanding</field>
+        <field name="binding_model_id" ref="model_commercial_bank_submission"/>
+        <field name="binding_type">report</field>
+    </record>
+    <template id="report_ud_quantity">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout"><div class="page">
+                    <h2>UD Quantity Balance</h2>
+                    <p><strong>UD:</strong> <span t-field="o.ud_number"/>
+                    | <strong>Export LC:</strong> <span t-field="o.export_lc_id.lc_number"/></p>
+                    <table class="table table-sm">
+                        <tr><th>Declared Quantity</th><td><span t-field="o.quantity"/></td></tr>
+                        <tr><th>Shipped Quantity</th><td><span t-field="o.shipped_qty"/></td></tr>
+                        <tr><th>Available Balance</th><td><span t-field="o.remaining_qty"/></td></tr>
+                    </table>
+                    <h4>Shipment Invoices</h4>
+                    <table class="table table-sm">
+                        <thead><tr><th>Invoice</th><th>Shipment Date</th><th>Quantity</th><th>Status</th></tr></thead>
+                        <tbody><tr t-foreach="o.invoice_ids" t-as="inv">
+                            <td><span t-field="inv.invoice_number"/></td>
+                            <td><span t-field="inv.shipment_date"/></td>
+                            <td><span t-field="inv.total_qty"/></td>
+                            <td><span t-field="inv.state"/></td>
+                        </tr></tbody>
+                    </table>
+                </div></t>
+            </t>
+        </t>
+    </template>
+    <template id="report_bank_outstanding">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout"><div class="page">
+                    <h2>Bank Outstanding Summary</h2>
+                    <p><strong>Bank Bill:</strong> <span t-field="o.name"/>
+                    | <strong>LC:</strong> <span t-field="o.export_lc_id.lc_number"/></p>
+                    <table class="table table-sm">
+                        <tr><th>Bill Amount</th><td><span t-field="o.amount"/></td></tr>
+                        <tr><th>Cash Received</th><td><span t-field="o.received_amount_total"/></td></tr>
+                        <tr><th>Open Balance</th><td><span t-field="o.outstanding_amount"/></td></tr>
+                        <tr><th>Maturity Date</th><td><span t-field="o.maturity_date"/></td></tr>
+                    </table>
+                    <h4>Realizations</h4>
+                    <table class="table table-sm">
+                        <thead><tr><th>Date</th><th>Bank Ref</th><th>Cash</th><th>Deductions</th><th>State</th></tr></thead>
+                        <tbody><tr t-foreach="o.realization_ids" t-as="receipt">
+                            <td><span t-field="receipt.date"/></td>
+                            <td><span t-field="receipt.bank_receipt_reference"/></td>
+                            <td><span t-field="receipt.received_amount"/></td>
+                            <td><span t-field="receipt.total_deduction"/></td>
+                            <td><span t-field="receipt.state"/></td>
+                        </tr></tbody>
+                    </table>
+                </div></t>
+            </t>
+        </t>
+    </template>
+</odoo>

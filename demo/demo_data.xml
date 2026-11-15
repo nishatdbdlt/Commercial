@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="demo_buyer" model="res.partner">
+            <field name="name">Northstar Apparel Group (Demo)</field>
+            <field name="company_type">company</field>
+            <field name="customer_rank">1</field>
+            <field name="street">1 Fashion Avenue</field>
+            <field name="city">New York</field>
+            <field name="country_id" ref="base.us"/>
+        </record>
+        <record id="demo_supplier" model="res.partner">
+            <field name="name">Eastern Textiles Ltd (Demo)</field>
+            <field name="company_type">company</field>
+            <field name="supplier_rank">1</field>
+            <field name="street">Industrial Area</field>
+            <field name="city">Dhaka</field>
+            <field name="country_id" ref="base.bd"/>
+        </record>
+        <record id="demo_issuing_bank" model="res.bank">
+            <field name="name">Northstar Trade Bank (Demo)</field>
+            <field name="bic">NSTBUS33</field>
+        </record>
+        <record id="demo_negotiating_bank" model="res.bank">
+            <field name="name">Eastern Commercial Bank (Demo)</field>
+            <field name="bic">ECBLBDDH</field>
+        </record>
+
+        <record id="demo_export_lc" model="commercial.export.lc">
+            <field name="lc_number">NSAG-EXP-2026-001</field>
+            <field name="lc_type">lc</field>
+            <field name="buyer_id" ref="demo_buyer"/>
+            <field name="issuing_bank_id" ref="demo_issuing_bank"/>
+            <field name="advising_bank_id" ref="demo_negotiating_bank"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="currency_id" ref="base.USD"/>
+            <field name="lc_value">100000</field>
+            <field name="tolerance_percent">5</field>
+            <field name="btb_limit_percent">75</field>
+            <field name="issue_date">2026-07-01</field>
+            <field name="last_shipment_date">2026-12-31</field>
+            <field name="expiry_date">2027-01-31</field>
+            <field name="payment_terms">Usance 90 days from B/L date</field>
+            <field name="usance_days">90</field>
+            <field name="incoterm">FOB Chattogram</field>
+            <field name="state">running</field>
+        </record>
+        <record id="demo_lc_amendment" model="commercial.lc.amendment">
+            <field name="export_lc_id" ref="demo_export_lc"/>
+            <field name="amendment_no">AMD-01</field>
+            <field name="date">2026-10-10</field>
+            <field name="value_change">5000</field>
+            <field name="new_last_shipment_date">2027-01-15</field>
+            <field name="new_expiry_date">2027-02-15</field>
+            <field name="description">Shipment schedule and LC value extension (demo).</field>
+        </record>
+
+        <record id="demo_ud" model="commercial.ud">
+            <field name="ud_number">UD-BGMEA-2026-0001</field>
+            <field name="ud_date">2026-07-15</field>
+            <field name="association">bgmea</field>
+            <field name="export_lc_id" ref="demo_export_lc"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="ud_value">35000</field>
+            <field name="quantity">3000</field>
+            <field name="state">issued</field>
+        </record>
+        <record id="demo_btb_lc" model="commercial.btb.lc">
+            <field name="btb_number">BB-ECBL-2026-0091</field>
+            <field name="btb_type">usance</field>
+            <field name="supplier_id" ref="demo_supplier"/>
+            <field name="export_lc_id" ref="demo_export_lc"/>
+            <field name="issuing_bank_id" ref="demo_negotiating_bank"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="currency_id" ref="base.USD"/>
+            <field name="value">30000</field>
+            <field name="margin_percent">10</field>
+            <field name="issue_date">2026-07-20</field>
+            <field name="expiry_date">2027-01-15</field>
+            <field name="usance_days">90</field>
+            <field name="acceptance_date">2026-09-10</field>
+            <field name="ud_id" ref="demo_ud"/>
+            <field name="state">accepted</field>
+        </record>
+        <record id="demo_pi" model="commercial.pi">
+            <field name="pi_number">ETL-PI-2026-0042</field>
+            <field name="date">2026-07-18</field>
+            <field name="supplier_id" ref="demo_supplier"/>
+            <field name="export_lc_id" ref="demo_export_lc"/>
+            <field name="btb_lc_id" ref="demo_btb_lc"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="currency_id" ref="base.USD"/>
+            <field name="state">confirmed</field>
+            <field name="line_ids" eval="[
+                (0, 0, {
+                    'description': 'Cotton jersey fabric, 180 GSM',
+                    'quantity': 12000,
+                    'uom_id': ref('uom.product_uom_meter'),
+                    'price_unit': 1.50
+                }),
+                (0, 0, {
+                    'description': 'Rib fabric and trims',
+                    'quantity': 1,
+                    'uom_id': ref('uom.product_uom_unit'),
+                    'price_unit': 12000
+                })
+            ]"/>
+        </record>
+
+        <record id="demo_invoice" model="commercial.invoice">
+            <field name="invoice_number">INV-NSAG-2026-0007</field>
+            <field name="invoice_date">2026-09-28</field>
+            <field name="export_lc_id" ref="demo_export_lc"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="shipment_date">2026-09-30</field>
+            <field name="bl_number">ONEYCHT26093001</field>
+            <field name="bl_date">2026-10-01</field>
+            <field name="vessel">MV Bay Horizon</field>
+            <field name="port_loading">Chattogram, Bangladesh</field>
+            <field name="port_discharge">New York, USA</field>
+            <field name="exp_number">EXP-2026-88421</field>
+            <field name="exp_date">2026-09-25</field>
+            <field name="container_no">TGHU1234567</field>
+            <field name="state">realized</field>
+            <field name="line_ids" eval="[
+                (0, 0, {
+                    'style_no': 'NS-TEE-2401',
+                    'description': 'Men cotton jersey T-shirt',
+                    'hs_code': '6109.10',
+                    'quantity': 5000,
+                    'uom_id': ref('uom.product_uom_unit'),
+                    'price_unit': 5.00,
+                    'cartons': 100,
+                    'net_weight': 850,
+                    'gross_weight': 1020,
+                    'cbm': 8.5
+                })
+            ]"/>
+            <field name="marks">NORTHSTAR APPAREL / NEW YORK / MADE IN BANGLADESH</field>
+        </record>
+        <record id="demo_bank_submission" model="commercial.bank.submission">
+            <field name="bank_ref">ECBL-BILL-2026-7712</field>
+            <field name="export_lc_id" ref="demo_export_lc"/>
+            <field name="bank_id" ref="demo_negotiating_bank"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="submission_date">2026-10-15</field>
+            <field name="acceptance_date">2026-10-20</field>
+            <field name="invoice_ids" eval="[(6, 0, [ref('demo_invoice')])]"/>
+            <field name="state">realized</field>
+        </record>
+        <record id="demo_realization" model="commercial.realization">
+            <field name="submission_id" ref="demo_bank_submission"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="date">2026-11-01</field>
+            <field name="exchange_rate">121.5000</field>
+            <field name="state">done</field>
+            <field name="deduction_ids" eval="[
+                (0, 0, {
+                    'deduction_type': 'bank_charge',
+                    'description': 'Negotiation and SWIFT charges',
+                    'amount': 125
+                })
+            ]"/>
+            <field name="note">Demo record showing the completed export-proceeds flow.</field>
+        </record>
+    </data>
+</odoo>

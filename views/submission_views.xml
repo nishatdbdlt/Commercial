@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_commercial_submission_list" model="ir.ui.view">
+        <field name="name">commercial.bank.submission.list</field>
+        <field name="model">commercial.bank.submission</field>
+        <field name="arch" type="xml">
+            <list string="Bank Submissions" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="bank_ref"/>
+                <!-- <field name="user_id"/> -->
+                <field name="submission_date"/>
+                <field name="export_lc_id"/>
+                <field name="buyer_id" optional="show"/>
+                <field name="bank_id" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+                <field name="maturity_date"/>
+                <field name="state" widget="badge" decoration-info="state == 'submitted'"
+                       decoration-warning="state == 'accepted'" decoration-success="state == 'realized'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_commercial_submission_form" model="ir.ui.view">
+        <field name="name">commercial.bank.submission.form</field>
+        <field name="model">commercial.bank.submission</field>
+        <field name="arch" type="xml">
+            <form string="Bank Submission">
+                <header>
+                    <button name="action_submit" string="Submit to Bank" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_accept" string="Mark Accepted" type="object" class="btn-primary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_create_realization" string="Record Realization" type="object"
+                            class="btn-primary" invisible="state not in ('submitted', 'accepted')"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('realized', 'cancelled')"/>
+                    <button name="action_draft" string="Reset to Draft" type="object" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,accepted,realized"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_realizations" type="object" class="oe_stat_button" icon="fa-money"
+                                invisible="realization_count == 0">
+                            <field name="realization_count" widget="statinfo" string="Realizations"/>
+                        </button>
+                    </div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="export_lc_id"/>
+                            <field name="buyer_id"/>
+                            <field name="bank_id"/>
+                            <field name="bank_ref"/>
+                            <!-- <field name="user_id"/> -->
+                        </group>
+                        <group>
+                            <field name="currency_id"/>
+                            <field name="amount"/>
+                            <field name="submission_date"/>
+                            <field name="acceptance_date"/>
+                            <field name="maturity_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Commercial Invoices" name="invoices">
+                            <field name="invoice_ids"
+                                   domain="[('export_lc_id', '=', export_lc_id), ('state', 'in', ('confirmed', 'submitted'))]"/>
+                        </page>
+                        <page string="Notes" name="notes"><field name="note"/></page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_commercial_submission_search" model="ir.ui.view">
+        <field name="name">commercial.bank.submission.search</field>
+        <field name="model">commercial.bank.submission</field>
+        <field name="arch" type="xml">
+            <search string="Search Submission">
+                <field name="name"/>
+                <field name="bank_ref"/>
+                <field name="export_lc_id"/>
+                <field name="buyer_id"/>
+                <filter name="pending" string="Pending Realization"
+                        domain="[('state', 'in', ('submitted', 'accepted'))]"/>
+                <filter name="realized" string="Realized" domain="[('state', '=', 'realized')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_lc" string="Export LC" context="{'group_by': 'export_lc_id'}"/>
+                    <filter name="group_bank" string="Bank" context="{'group_by': 'bank_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_commercial_submission" model="ir.actions.act_window">
+        <field name="name">Bank Submissions</field>
+        <field name="res_model">commercial.bank.submission</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

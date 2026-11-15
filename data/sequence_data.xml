@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_commercial_export_lc" model="ir.sequence">
+        <field name="name">Export LC</field>
+        <field name="code">commercial.export.lc</field>
+        <field name="prefix">ELC/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_commercial_pi" model="ir.sequence">
+        <field name="name">Commercial PI</field>
+        <field name="code">commercial.pi</field>
+        <field name="prefix">PI/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_commercial_btb_lc" model="ir.sequence">
+        <field name="name">BBLC</field>
+        <field name="code">commercial.btb.lc</field>
+        <field name="prefix">BBLC/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_commercial_ud" model="ir.sequence">
+        <field name="name">UD</field>
+        <field name="code">commercial.ud</field>
+        <field name="prefix">UD/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_commercial_invoice" model="ir.sequence">
+        <field name="name">Commercial Invoice</field>
+        <field name="code">commercial.invoice</field>
+        <field name="prefix">CI/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_commercial_bank_submission" model="ir.sequence">
+        <field name="name">Bank Submission</field>
+        <field name="code">commercial.bank.submission</field>
+        <field name="prefix">SUB/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_commercial_realization" model="ir.sequence">
+        <field name="name">Realization</field>
+        <field name="code">commercial.realization</field>
+        <field name="prefix">RLZ/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

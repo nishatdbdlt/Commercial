@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_commercial_pi_list" model="ir.ui.view">
+        <field name="name">commercial.pi.list</field>
+        <field name="model">commercial.pi</field>
+        <field name="arch" type="xml">
+            <list string="Proforma Invoices" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="pi_number"/>
+                <field name="date"/>
+                <field name="supplier_id"/>
+                <field name="export_lc_id" optional="show"/>
+                <field name="btb_lc_id" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="state" widget="badge" decoration-success="state == 'confirmed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_commercial_pi_form" model="ir.ui.view">
+        <field name="name">commercial.pi.form</field>
+        <field name="model">commercial.pi</field>
+        <field name="arch" type="xml">
+            <form string="Proforma Invoice">
+                <header>
+                    <button name="action_create_btb_lc" string="Create / Open BBLC" type="object"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_confirm" string="Confirm" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state == 'cancelled'"/>
+                    <button name="action_draft" string="Reset to Draft" type="object" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="pi_number"/>
+                            <field name="date"/>
+                            <field name="supplier_id"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="export_lc_id"/>
+                            <field name="btb_lc_id" domain="[('export_lc_id', '=', export_lc_id)]"/>
+                            <field name="currency_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Items" name="items">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="product_id"/>
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="subtotal"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_total"/>
+                            </group>
+                        </page>
+                        <page string="Purchase Orders" name="purchase_orders">
+                            <field name="purchase_order_ids" readonly="1"/>
+                        </page>
+                        <page string="Notes" name="notes"><field name="note"/></page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_commercial_pi_search" model="ir.ui.view">
+        <field name="name">commercial.pi.search</field>
+        <field name="model">commercial.pi</field>
+        <field name="arch" type="xml">
+            <search string="Search PI">
+                <field name="pi_number"/>
+                <field name="name"/>
+                <field name="supplier_id"/>
+                <field name="export_lc_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_supplier" string="Supplier" context="{'group_by': 'supplier_id'}"/>
+                    <filter name="group_lc" string="Export LC" context="{'group_by': 'export_lc_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_commercial_pi" model="ir.actions.act_window">
+        <field name="name">Proforma Invoices</field>
+        <field name="res_model">commercial.pi</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

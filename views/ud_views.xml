@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_commercial_ud_list" model="ir.ui.view">
+        <field name="name">commercial.ud.list</field>
+        <field name="model">commercial.ud</field>
+        <field name="arch" type="xml">
+            <list string="UDs" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="ud_number"/>
+                <field name="ud_date"/>
+                <field name="association"/>
+                <field name="export_lc_id"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="ud_value"/>
+                <field name="quantity"/>
+                <field name="state" widget="badge" decoration-success="state == 'issued'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_commercial_ud_form" model="ir.ui.view">
+        <field name="name">commercial.ud.form</field>
+        <field name="model">commercial.ud</field>
+        <field name="arch" type="xml">
+            <form string="Utilization Declaration">
+                <header>
+                    <button name="action_apply" string="Mark Applied" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_issue" string="Mark Issued" type="object" class="btn-primary"
+                            invisible="state != 'applied'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('issued', 'cancelled')"/>
+                    <button name="action_draft" string="Reset to Draft" type="object" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,applied,issued"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="ud_number"/>
+                            <field name="ud_date"/>
+                            <field name="association"/>
+                            <field name="export_lc_id"/>
+                        </group>
+                        <group>
+                            <field name="currency_id"/>
+                            <field name="ud_value"/>
+                            <field name="quantity"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Linked BBLCs" name="btbs">
+                            <field name="btb_lc_ids" readonly="1"/>
+                        </page>
+                        <page string="Notes" name="notes"><field name="note"/></page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_commercial_ud_search" model="ir.ui.view">
+        <field name="name">commercial.ud.search</field>
+        <field name="model">commercial.ud</field>
+        <field name="arch" type="xml">
+            <search string="Search UD">
+                <field name="ud_number"/>
+                <field name="name"/>
+                <field name="export_lc_id"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_lc" string="Export LC" context="{'group_by': 'export_lc_id'}"/>
+                    <filter name="group_assoc" string="Association" context="{'group_by': 'association'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_commercial_ud" model="ir.actions.act_window">
+        <field name="name">UDs</field>
+        <field name="res_model">commercial.ud</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
